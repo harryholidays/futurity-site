@@ -290,4 +290,22 @@ const accordion = (function(){
 $(document).ready(function(){
   accordion.init(accSettings);
 });
-</script></body></html>
+</script><!-- custom: smooth cursor + hide webflow badge -->
+<style>
+  /* Hide the "Made in Webflow" badge */
+  .w-webflow-badge { display: none !important; }
+  /* Smooth the custom cursor by easing its transform between positions */
+  .cursor { transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1); will-change: transform; }
+  .cursor_dot { transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1); }
+</style>
+<script>
+  // Ensure the badge stays removed even if injected after load
+  (function () {
+    function rm() { var b = document.querySelector('.w-webflow-badge'); if (b) b.remove(); }
+    rm();
+    document.addEventListener('DOMContentLoaded', rm);
+    window.addEventListener('load', rm);
+    var n = 0, t = setInterval(function () { rm(); if (++n > 10) clearInterval(t); }, 500);
+  })();
+</script>
+</body></html>
