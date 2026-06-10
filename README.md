@@ -11,3 +11,5 @@ fully functional when served as static files.
 
 ## Deploy
 Hosted on Netlify as a static site (publish directory = repo root).
+
+<!-- CD test 0746849 -->
