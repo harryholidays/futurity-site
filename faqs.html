@@ -295,6 +295,8 @@ $(document).ready(function(){
   /* Cursor tracks the pointer instantly (no lag) */
   .cursor { transition: none !important; will-change: transform; }
   .cursor_dot { transition: none !important; }
+  /* Remove blend mode: it forced main-thread repaints, stuttering cursor + scroll */
+  .cursor, .cursor_dot { mix-blend-mode: normal !important; }
   /* Ensure interaction-revealed content is always visible (effects removed) */
   [data-w-id] { opacity: 1 !important; }
 </style>
