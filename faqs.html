@@ -292,9 +292,9 @@ $(document).ready(function(){
 <style>
   /* Hide the "Made in Webflow" badge */
   .w-webflow-badge { display: none !important; }
-  /* Smooth the custom cursor by easing its transform between positions */
-  .cursor { transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1); will-change: transform; }
-  .cursor_dot { transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1); }
+  /* Cursor tracks the pointer instantly (no lag) */
+  .cursor { transition: none !important; will-change: transform; }
+  .cursor_dot { transition: none !important; }
 </style>
 <script>
   // Ensure the badge stays removed even if injected after load
