@@ -297,6 +297,8 @@ $(document).ready(function(){
   /* Cursor tracks the pointer instantly (no lag) */
   .cursor { transition: none !important; will-change: transform; }
   .cursor_dot { transition: none !important; }
+  /* While scrolling, drop the expensive blend + hide cursor to avoid repaint stutter */
+  .cursor.is-scrolling { opacity: 0 !important; mix-blend-mode: normal !important; }
 </style>
 <script>
   // Ensure the badge stays removed even if injected after load
@@ -306,6 +308,14 @@ $(document).ready(function(){
     document.addEventListener('DOMContentLoaded', rm);
     window.addEventListener('load', rm);
     var n = 0, t = setInterval(function () { rm(); if (++n > 10) clearInterval(t); }, 500);
+    // Hide the blend-mode cursor while scrolling to prevent recomposite jank
+    var cur = document.querySelector('.cursor'), st;
+    window.addEventListener('scroll', function () {
+      if (!cur) return;
+      cur.classList.add('is-scrolling');
+      clearTimeout(st);
+      st = setTimeout(function () { cur.classList.remove('is-scrolling'); }, 120);
+    }, { passive: true });
   })();
 </script>
 </body></html>
