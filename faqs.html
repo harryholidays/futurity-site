@@ -288,32 +288,44 @@ const accordion = (function(){
 $(document).ready(function(){
   accordion.init(accSettings);
 });
-</script><!-- custom: smooth cursor + hide webflow badge -->
+</script><!-- custom: instant cursor, hide webflow badge, disable scroll interactions -->
 <style>
   /* Hide the "Made in Webflow" badge */
   .w-webflow-badge { display: none !important; }
   /* Cursor tracks the pointer instantly (no lag) */
   .cursor { transition: none !important; will-change: transform; }
   .cursor_dot { transition: none !important; }
-  /* While scrolling, drop the expensive blend + hide cursor to avoid repaint stutter */
-  .cursor.is-scrolling { opacity: 0 !important; mix-blend-mode: normal !important; }
+  /* Ensure interaction-revealed content is always visible (effects removed) */
+  [data-w-id] { opacity: 1 !important; }
 </style>
 <script>
-  // Ensure the badge stays removed even if injected after load
   (function () {
-    function rm() { var b = document.querySelector('.w-webflow-badge'); if (b) b.remove(); }
-    rm();
-    document.addEventListener('DOMContentLoaded', rm);
-    window.addEventListener('load', rm);
-    var n = 0, t = setInterval(function () { rm(); if (++n > 10) clearInterval(t); }, 500);
-    // Hide the blend-mode cursor while scrolling to prevent recomposite jank
-    var cur = document.querySelector('.cursor'), st;
-    window.addEventListener('scroll', function () {
-      if (!cur) return;
-      cur.classList.add('is-scrolling');
-      clearTimeout(st);
-      st = setTimeout(function () { cur.classList.remove('is-scrolling'); }, 120);
-    }, { passive: true });
+    // Remove the "Made in Webflow" badge if it gets injected
+    function rmBadge() { var b = document.querySelector('.w-webflow-badge'); if (b) b.remove(); }
+    rmBadge();
+    document.addEventListener('DOMContentLoaded', rmBadge);
+    window.addEventListener('load', rmBadge);
+    var n = 0, t = setInterval(function () { rmBadge(); if (++n > 10) clearInterval(t); }, 500);
+
+    // Disable all Webflow scroll/interaction (IX2) effects, then reveal hidden content
+    function forceVisible() {
+      document.querySelectorAll('[style]').forEach(function (el) {
+        var s = el.getAttribute('style') || '';
+        if (/opacity:\s*0(\b|;|$)/.test(s)) el.style.opacity = '1';
+      });
+    }
+    function killIX2() {
+      try {
+        var ix2 = window.Webflow && window.Webflow.require && window.Webflow.require('ix2');
+        if (ix2 && ix2.store && ix2.store.dispatch) {
+          ix2.store.dispatch({ type: 'IX2_STOP_REQUESTED' });
+          ix2.store.dispatch({ type: 'IX2_CLEAR_REQUESTED' });
+        }
+      } catch (e) {}
+      forceVisible();
+    }
+    if (window.Webflow && window.Webflow.push) { window.Webflow.push(killIX2); }
+    window.addEventListener('load', function () { killIX2(); setTimeout(killIX2, 300); });
   })();
 </script>
 </body></html>
